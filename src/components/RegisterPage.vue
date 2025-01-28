@@ -93,7 +93,6 @@ const form = ref({
   nickname: '',
   links: '',       // JSON 문자열 (단일 객체)
   isPublic: true,
-  imageUrl: '',
   tags: ''
 })
 
@@ -219,13 +218,18 @@ async function submitForm() {
   form.value.isPublic = isPublicComputed.value
   form.value.tags = selectedTags.value.join(',')
 
+  const formData = new FormData();
+  formData.append("user", new Blob([JSON.stringify(form.value)], { type: "application/json" })); // JSON 데이터를 Blob으로 추가
+  if (selectedFile) {
+    formData.append("file", selectedFile); // 선택한 파일 추가
+  }
   try {
     const auth = getAuth()
     const idToken = await auth.currentUser.getIdToken(true)
 
-    const res = await axios.post('http://localhost:8080/api/users/register', form.value, {
+    const res = await axios.post('http://localhost:8080/api/users/register', formData, {
       headers: {
-        'Authorization': `Bearer ${idToken}`
+        'Authorization': `Bearer ${idToken}`,
       }
     })
 
