@@ -51,15 +51,12 @@
 </template>
 
 <script setup>
-import { getAuth, setPersistence, browserLocalPersistence, browserSessionPersistence, signInWithPopup, GoogleAuthProvider } from 'firebase/auth'
+import { auth, provider, signInWithPopup } from "@/firebase";
 import api from '../helpers/api'
 import router from "@/router/index.js";  // 위에서 만든 axios instance
 
 async function loginWithGoogle() {
   try {
-    const auth = getAuth()
-
-    const provider = new GoogleAuthProvider()
     const result = await signInWithPopup(auth, provider)
     const idToken = await result.user.getIdToken(true)
     // 서버에 /api/users/me (or /api/auth/verify) 호출 → DB에 유저가 있나 확인
@@ -68,6 +65,7 @@ async function loginWithGoogle() {
     })
     console.log('Login success! user:', res)
     // 여기까지 오면 DB에 유저가 존재하는 것 → 메인 페이지나 홈으로 이동
+
 
     await router.push('/main')
   } catch (error) {

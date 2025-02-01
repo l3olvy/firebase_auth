@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_API_KEY,
@@ -11,8 +11,8 @@ const firebaseConfig = {
 };
 
 // Firebase 초기화
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+const firebaseApp = initializeApp(firebaseConfig);
+const auth = getAuth(firebaseApp);
 const provider = new GoogleAuthProvider();
 
-export { auth, provider, signInWithPopup};
+export { firebaseApp, auth, provider, signInWithPopup };

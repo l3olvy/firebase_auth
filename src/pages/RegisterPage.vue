@@ -5,7 +5,7 @@
     <!-- 이메일 (Firebase 로그인에서 획득) -->
     <div class="form-group">
       <label>이메일</label>
-      <input v-model="email" readonly />
+      <input v-model="email" />
     </div>
 
     <!-- 아이디(profileId) -->
@@ -89,6 +89,7 @@ import api from "@/helpers/api.js";
 
 // 서버로 보낼 Form 데이터
 const form = ref({
+  email: '',
   profileId: '',
   nickname: '',
   links: '',       // JSON 문자열 (단일 객체)
@@ -111,7 +112,7 @@ watch(
     [linkTitle, linkUrl],
     ([newTitle, newUrl]) => {
       if (newTitle && newUrl) {
-        form.value.links = JSON.stringify({ title: newTitle, url: newUrl })
+        form.value.links = JSON.stringify({ title: newTitle, url: newUrl });
       } else {
         form.value.links = '' // 제목이나 URL이 비어 있으면 links 초기화
       }
@@ -148,7 +149,9 @@ let selectedFile = null
 onMounted(async () => {
   const auth = getAuth()
   if (auth.currentUser) {
-    email.value = auth.currentUser.email || ''
+    const userEmail = auth.currentUser.email || ''
+    email.value = userEmail
+    form.value.email = userEmail
   }
 })
 
@@ -164,7 +167,7 @@ async function checkProfileId() {
     const auth = getAuth()
     const idToken = await auth.currentUser.getIdToken(true)
 
-    const res = await axios.get('http://localhost:8080/api/users/check-profile-id', {
+    const res = await axios.get('/api/users/check-profile-id', {
       headers: { Authorization: `Bearer ${idToken}` },
       params: { profileId: form.value.profileId }
     })
@@ -227,7 +230,7 @@ async function submitForm() {
     const auth = getAuth()
     const idToken = await auth.currentUser.getIdToken(true)
 
-    const res = await axios.post('http://localhost:8080/api/users/register', formData, {
+    const res = await axios.post('/api/users/register', formData, {
       headers: {
         'Authorization': `Bearer ${idToken}`,
       }
